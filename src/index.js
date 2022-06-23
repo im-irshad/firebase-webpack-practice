@@ -1,5 +1,12 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 const firebaseConfig = {
   apiKey: process.env.apiKey,
   authDomain: process.env.authDomain,
@@ -32,11 +39,16 @@ addBookForm.addEventListener("submit", (e) => {
     title: addBookForm.title.value,
     author: addBookForm.author.value,
   }).then(() => {
-    addBookForm.requestFullscreen();
+    addBookForm.reset();
   });
 });
 
 const deleteBookForm = document.querySelector(".delete");
 deleteBookForm.addEventListener("submit", (e) => {
-  e.preventDefault;
+  e.preventDefault();
+
+  const docRef = doc(db, "books", deleteBookForm.id.value);
+  deleteDoc(docRef).then(() => {
+    deleteBookForm.reset();
+  });
 });
