@@ -25,7 +25,7 @@ cypress/screenshots
 
 # Ignore env local files - https://create-react-app.dev/docs/adding-custom-environment-variables/#what-other-env-files-can-be-used
 .env*.local
-
+.env
 #amplify
 amplify/\#current-cloud-backend
 amplify/.config/local-*
