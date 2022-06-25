@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
 import {
   getFirestore,
@@ -52,7 +53,7 @@ const q = query(
   orderBy("createdAt")
 );
 
-onSnapshot(q, (snapshot) => {
+const unsubCol = onSnapshot(q, (snapshot) => {
   let books = [];
   snapshot.docs.forEach((doc) => {
     books.push({ ...doc.data(), id: doc.id });
@@ -91,7 +92,7 @@ getDoc(docRef).then((doc) => {
   console.log(doc.data(), doc.id);
 });
 
-onSnapshot(docRef, (doc) => {
+const unsubDoc = onSnapshot(docRef, (doc) => {
   console.log(doc.data());
 });
 
@@ -114,25 +115,32 @@ signupForm.addEventListener("submit", (e) => {
 
 const logoutButton = document.querySelector(".logout");
 logoutButton.addEventListener("click", () => {
-  signOut(auth)
-    .then(() => {
-      console.log("the user signed out");
-    })
-    .catch((err) => {
-      console.log(err.message);
-    });
+  signOut(auth).then(() => {
+    console.log("the user signed out");
+  });
 });
 
 const loginForm = document.querySelector(".login");
-loginForm
-  .addEventListener("submit", (e) => {
-    e.preventDefault();
-    const email = loginForm.email.value;
-    const password = loginForm.password.value;
-    signInWithEmailAndPassword(auth, email, password).then((cred) =>
-      console.log("user logged in: ", cred.user)
-    );
-  })
-  .catch((err) => {
-    console.log(err.message);
-  });
+loginForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const email = loginForm.email.value;
+  const password = loginForm.password.value;
+  signInWithEmailAndPassword(auth, email, password).then((cred) =>
+    console.log("user logged in: ", cred.user)
+  );
+});
+
+// subscribe to AUTH change.
+const unsubAuth = onAuthStateChanged(auth, (user) => {
+  console.log("User Status:", user);
+});
+
+// Unsubscribe
+const unsubButton = document.querySelector(".unsub");
+console.log(unsubButton);
+unsubButton.addEventListener("click", () => {
+  console.log("unsubscribed subscriptions:");
+  unsubAuth();
+  unsubCol();
+  unsubDoc();
+});
